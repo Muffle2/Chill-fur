@@ -1,38 +1,40 @@
-import asyncio, random, os, database, discord, youtube_dl
+import asyncio, random, os, database, nextcord, youtube_dl
 from database import token
-from discord.ext import commands
+from nextcord.ext import commands
 
-
-intents = discord.Intents().all()
-client = discord.Client(intents=intents)
 
 
 youtube_dl.utils.bug_reports_message = lambda: ''
-client = commands.Bot(command_prefix="!", case_insensitive=True, owner_id=333363893546123264)
+client = commands.Bot(command_prefix="!", case_insensitive=True, owner_id=333363893546123264, intents=nextcord.Intents.all())
 
 client.remove_command("help")
 
 @client.event
 async def on_ready():
     print("client Online")
-    await client.change_presence(status=discord.Status.idle,activity=discord.Activity(type=discord.ActivityType.watching, name="Server en desarollo"))
+    await client.change_presence(status=nextcord.Status.idle,activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="Server en desarollo"))
+
+@client.event
+async def on_member_join(member):
+	embed=nextcord.Embed(title=f"Bienvenido al servidor {member.mention}!", description="Recuerda leer las reglas para evitar ser sancionado y disfruta del servidor!")
+	await client.get_channel(981862648264163348).send(embed = embed)
 
 @client.command()
 async def help(ctx):
-    embed = discord.Embed(title="Menu de ayuda")
+    embed = nextcord.Embed(title="Menu de ayuda")
     embed.add_field(name="Comandos de musica", value="!musica", inline=False)
     embed.set_footer(text="Powered by Muffle")
     await ctx.reply(embed=embed)
 
 @client.command()
 async def musica(ctx):
-    embed = discord.Embed(title="Comandos de musica")
+    embed = nextcord.Embed(title="Comandos de musica")
     embed.add_field(name="Musica", value="|!play|!stop|!clear|!queue|!resume|!skip|!dc|!pause|")
     embed.set_footer(text="Powered by Muffle")
     await ctx.reply(embed=embed)
 
 @client.command(name="user")
-async def user(ctx, user:discord.Member=None):
+async def user(ctx, user:nextcord.Member=None):
 	if user == None:
 		user=ctx.author
 
