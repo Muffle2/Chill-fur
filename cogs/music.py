@@ -1,8 +1,7 @@
 from ast import alias
-import discord
-from discord.ext import commands
+import nextcord, ffmpeg
+from nextcord.ext import commands
 from youtube_dl import YoutubeDL
-
 
 
 class music(commands.Cog):
@@ -27,13 +26,13 @@ class music(commands.Cog):
                 if message.content.lower() == '$play':
                     channel = client.get_channel(547155964328149007)
                     vc = await channel.connect()
-                    vc.play(discord.FFmpegPCMAudio('mp3.mp3'), after=lambda e: print('done', e))
+                    vc.play(nextcord.FFmpegPCMAudio('mp3.mp3'), after=lambda e: print('done', e))
                     vc.is_playing()
                     vc.pause()
                     vc.resume()
                     vc.stop()
                     vc = await channel.connect()
-                    vc.play(discord.FFmpegPCMAudio(executable="C:/path/ffmpeg.exe", source="mp3.mp3"))  
+                    vc.play(nextcord.FFmpegPCMAudio(executable="C:/path/ffmpeg.exe", source="mp3.mp3"))  
 
      #searching the item on youtube
     def search_yt(self, item):
@@ -45,6 +44,7 @@ class music(commands.Cog):
 
         return {'source': info['formats'][0]['url'], 'title': info['title']}
 
+
     def play_next(self):
         if len(self.music_queue) > 0:
             self.is_playing = True
@@ -55,7 +55,7 @@ class music(commands.Cog):
             #remove the first element as you are currently playing it
             self.music_queue.pop(0)
 
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+            self.vc.play(nextcord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
         else:
             self.is_playing = False
 
@@ -80,13 +80,17 @@ class music(commands.Cog):
             #remove the first element as you are currently playing it
             self.music_queue.pop(0)
 
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+            self.vc.play(nextcord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
         else:
             self.is_playing = False
 
-    @commands.command(name="play", aliases=["p","playing"], help="Play una musica de youtube")
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print("Musica on")
+
+    @commands.command()
     async def play(self, ctx, *args):
-        await ctx.reply("Añadiendo cancion espere.", delete_after=5)
+        await ctx.reply("Añadiendo cancion espere.", delete_after=3)
         query = " ".join(args)
         
         voice_channel = ctx.author.voice.channel
@@ -99,25 +103,45 @@ class music(commands.Cog):
             if type(song) == type(True):
                 await ctx.reply("No se pudo descargar la canción. Formato incorrecto pruebe con otra palabra clave. Esto podría deberse a una lista de reproducción o un formato de transmisión en vivo.")
             else:
-                await ctx.reply("Cancion añadida a la lista")
+                cancion = nextcord.Embed(title="Cancion añadida en la lista!", description=f"Cancion sonando ahora: {song['title']}")
+                await ctx.reply(embed=cancion)
                 self.music_queue.append([song, voice_channel])
                 
                 if self.is_playing == False:
                     await self.play_music(ctx)
 
-    @commands.command(name="pause", help="Pausa la cancion")
+    @commands.command(name="pause",aliases=["stop"], help="Pausa la cancion")
     async def pause(self, ctx, *args):
         if self.is_playing:
             self.is_playing = False
             self.is_paused = True
             self.vc.pause()
+            await ctx.reply(embed=nextcord.Embed(title="Cancion parada!"))
         elif self.is_paused:
             self.vc.resume()
+            self.is_playing = True
+            self.is_paused = False
+            await ctx.reply(embed=nextcord.Embed(title="Cancion reanuada"))
 
     @commands.command(name = "resume", aliases=["r"], help="Resume la cancion puesta")
     async def resume(self, ctx, *args):
         if self.is_paused:
             self.vc.resume()
+            self.is_playing = False
+            self.is_paused = True
+            await ctx.reply(embed=nextcord.Embed(title="Cancion reanuada"))
+        if self.is_paused:
+            self.vc.resume()
+            self.is_playing = True
+            self.is_paused = False
+        else:
+            self.is_paused
+            self.vc.resume()
+            self.is_playing=True
+            self.is_paused=False
+            await ctx.reply(embed=nextcord.Embed(title="La cancion no esta parada!"))
+        
+
 
     @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
     async def skip(self, ctx):
@@ -125,6 +149,7 @@ class music(commands.Cog):
             self.vc.stop()
             #try to play next in the queue if it exists
             await self.play_music(ctx)
+            await ctx.reply(embed=nextcord.Embed(title="Cancion skipeada!"))
 
 
     @commands.command(name="queue", aliases=["q"], help="Displays the current songs in queue")
@@ -135,7 +160,7 @@ class music(commands.Cog):
             retval += self.music_queue[i][0]['title'] + "\n"
 
         if retval != "":
-            embed = discord.Embed(title="Lista de Musica en espera", description=f"{retval}")
+            embed = nextcord.Embed(title="Lista de Musica en espera", description=f"**{retval}**")
             await ctx.reply(embed=embed)
         else:
             await ctx.reply("No hay mas musica en la lista.")
