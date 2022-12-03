@@ -12,12 +12,24 @@ client.remove_command("help")
 @client.event
 async def on_ready():
     print("client Online")
-    await client.change_presence(status=nextcord.Status.idle,activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="Server en desarollo"))
+    await client.change_presence(status=nextcord.Status.online,activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="Hola"))
 
 @client.event
 async def on_member_join(member):
-	embed=nextcord.Embed(title=f"Bienvenido al servidor {member.mention}!", description="Recuerda leer las reglas para evitar ser sancionado y disfruta del servidor!")
-	await client.get_channel(981862648264163348).send(embed = embed)
+	true_member_count = len([m for m in member.guild.members if not m.bot])
+	embed=nextcord.Embed(title=f"Bienvenido al servidor {member.name}!", description=f"""Recuerda pasarte por las reglas para no tener ningún problema!
+	Esperemos que lo pases bien en el servidor {member.mention}.""")
+	embed.set_footer(text=f"Eres el usuario {true_member_count}")
+	embed.set_image(url="https://c.tenor.com/SHu_Ynq3EGEAAAAC/welcome.gif")
+	await client.get_channel(981862648264163348).send(embed=embed)
+
+@client.event
+async def on_member_remove(member):
+	true_member_count_leave = len([m for m in member.guild.members if not m.bot])
+	leave=nextcord.Embed(title=f"Se retiro del servidor {member.name}", description="Esperemós que vuelvas algún día")
+	leave.set_footer(text=f"Ahora somos {true_member_count_leave} usuarios")
+	leave.set_image(url="https://c.tenor.com/REzcaDkuv68AAAAC/katezuh-foxynian.gif")
+	await client.get_channel(981862665737601026).send(embed=leave)
 
 @client.command()
 async def help(ctx):
