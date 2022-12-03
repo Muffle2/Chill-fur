@@ -1,6 +1,6 @@
 # 🤖 | Chill-fur-Bot
 
-- Un bot personalizado ccódigopublico (bbásico para el servidor Chill zone
+- Un bot personalizado ccódigopublico (básico para el servidor Chill zone
 
 
 # Requisitos
