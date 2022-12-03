@@ -1,30 +1,30 @@
 # 🤖 | Chill-fur-Bot
 
-- Un bot personalizado codigo publico (basico) para el servidor Chill zone
+- Un bot personalizado ccódigopublico (bbásico para el servidor Chill zone
 
-### ¿Como ejecutar el bot?
 
-- Tendrás que descargar nextcord
-Si usted tiene discord.py tendra que desinstalarlo
+# Requisitos
+
+- nextcord
+- youtube_dl
+- ffmpeg
+
+# Empezando
+
+- Tendrás que descargar nextcord **(Si usted tiene discord.py, tendrá que desinstalarlo)**
 
 `py -3 -m pip uninstall discord.py`
 - Instalar nextcord
 
 `py -3 -m pip install -U nextcord`
-- Importes
+- Importes **(si usted tiene discord.py remplacé todos sus comandos a nextcord)**
 
-(si usted tiene discord.py remplaze todos sus comandos a nextcord)
+`import discord  import nextcord`
 
-`import discord > import nextcord`
+- Instalar los archivos
 
-(Si ya tienes nextcord para importalo)
+`git clone https://github.com/Muffle2/Plantilla-de-bot.git`
 
-`import nextcord`
+# 🎃 | Créditos
 
-# 😶 | Condiciones para usar la plantilla del bot en su servidor
-
-Dar creditos a su respectivo creador original del codigo.
-
-No hacerse pasar por creador de esta plantilla de bot.
-
-Creditos: Muffle#4803
+#### Todos los creditos hacia `Muffle#4803`
